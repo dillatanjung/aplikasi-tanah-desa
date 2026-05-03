@@ -6,27 +6,11 @@
         <h4 class="fw-bold text-dark">Data Himpunan Ketetapan Pajak (DHKP)</h4>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
-            <i class="bi bi-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white py-3">
             <div class="row align-items-center">
                 <div class="col-md-6 d-flex gap-2">
-                   <a href="#" class="btn btn-dark btn-sm">
+                    <a href="{{ route('dhkp.create') }}" class="btn btn-dark btn-sm">
                         <i class="bi bi-plus-lg"></i> Tambah
                     </a>
                     <a href="{{ route('dhkp.import-view') }}" class="btn btn-success btn-sm text-white">
@@ -76,8 +60,17 @@
                             <td>{{ number_format($item->luas_bng) }} m²</td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
-                                    <a href="#" class="btn btn-primary me-1 rounded"><i class="bi bi-pencil-fill"></i></a>
-                                    <button class="btn btn-danger rounded"><i class="bi bi-trash-fill"></i></button>
+                                    <a href="{{ route('dhkp.edit', $item->id) }}" class="btn btn-primary me-1 rounded">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    <form action="{{ route('dhkp.destroy', $item->id) }}" method="POST" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-danger rounded btn-delete" data-nama="{{ $item->nama_wp }}">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -101,4 +94,46 @@
         </div>
     </div>
 </div>
+
+{{-- SCRIPT SWEETALERT --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Notifikasi Sukses
+        @if(session('success'))
+            Swal.fire({
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#7066e0',
+            });
+        @endif
+
+        // 2. Logika Tombol Hapus
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const form = this.closest('.delete-form');
+                const nama = this.getAttribute('data-nama');
+
+                Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: "Data DHKP atas nama " + nama + " akan dihapus permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection

@@ -58,6 +58,39 @@ class DhkpController extends Controller
         }
     }
 
+    // Tambahkan ini di dalam class DhkpController
+
+// 1. Fungsi untuk menampilkan halaman Edit
+public function edit($id)
+{
+    $dhkp = \App\Models\Dhkp::findOrFail($id);
+    return view('dhkp.edit', compact('dhkp'));
+}
+
+// 2. Fungsi untuk memproses perubahan data (Update)
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'nama_wp' => 'required',
+        'no_blok' => 'required',
+        // tambahkan validasi lainnya sesuai kebutuhan
+    ]);
+
+    $dhkp = \App\Models\Dhkp::findOrFail($id);
+    $dhkp->update($request->all());
+
+    return redirect()->route('dhkp.index')->with('success', 'Data DHKP berhasil diperbarui!');
+}
+
+// 3. Fungsi untuk menghapus data (Destroy)
+public function destroy($id)
+{
+    $dhkp = \App\Models\Dhkp::findOrFail($id);
+    $dhkp->delete();
+
+    return redirect()->route('dhkp.index')->with('success', 'Data DHKP berhasil dihapus!');
+}
+
     public function downloadTemplate()
     {
         $headers = [

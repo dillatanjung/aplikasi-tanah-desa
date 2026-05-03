@@ -19,4 +19,9 @@ class Dhkp extends Model
         'luas_bumi', 
         'luas_bng'
     ];
+    public function pemiliks()
+{
+    // Hubungkan ID di tabel dhkps ke kolom lahan_desa_id di tabel pemilik_lahans
+    return $this->hasMany(PemilikLahan::class, 'lahan_desa_id', 'id');
+}
 }
